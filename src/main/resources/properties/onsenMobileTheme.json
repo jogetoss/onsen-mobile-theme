@@ -1,0 +1,549 @@
+[{
+    title : '@@theme.ajaxUniversalTheme.config@@',
+    properties : [
+    {
+        name : 'horizontal_menu',
+        label : '@@theme.progressive.menu_position@@',
+        type : 'hidden',
+        value : 'true'
+    },
+    {
+        name : 'toolbarDesign',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.toolbarDesign@@',
+        type : 'selectbox',
+        value : 'standard',
+        options : [{
+            value : 'titleOnLeft',
+            label : '@@org.joget.plugin.enterprise.onsenMobileTheme.titleOnLeft@@'
+        },{
+            value : 'standard',
+            label : '@@org.joget.plugin.enterprise.onsenMobileTheme.titleOnCenter@@'
+        }]
+    },
+    {
+        name : 'sideMenuAnimation',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.sideMenuAnimation@@',
+        type : 'selectbox',
+        value : 'reveal',
+        options : [{
+            value : 'reveal',
+            label : '@@org.joget.plugin.enterprise.onsenMobileTheme.reveal@@'
+        },{
+            value : '',
+            label : '@@org.joget.plugin.enterprise.onsenMobileTheme.slideIn@@'
+        }]
+    },
+    {
+        name : 'sideMenuWidth',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.sideMenuWidth@@',
+        type : 'textfield',
+        value : '300px',
+        required : 'True'
+    },
+    {
+        name : 'sideMenuSwipeable',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.sideMenuSwipeable@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'swipeTargetWidth',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.swipeTargetWidth@@',
+        type : 'textfield',
+        value : '50px',
+        required : 'True',
+        control_field: 'sideMenuSwipeable',
+        control_value: 'true',
+        control_use_regex: 'false',
+    },
+    {
+        name : 'tabBarSwipeable',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.tabBarSwipeable@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'userviewId',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.userviewId@@',
+        type : 'selectbox',
+        required : 'True',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/userview/options'
+    },
+    {
+        name : 'tabSettings',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.tabSettings@@',
+        type : 'grid',
+        columns : [{
+            key : 'category',
+            label : '@@org.joget.plugin.enterprise.onsenMobileTheme.category@@',
+            type : 'selectbox',
+            required : 'True',
+            options_ajax_on_change : 'userviewId',
+            options_ajax : '[CONTEXT_PATH]/web/json/plugin/org.joget.marketplace.OnsenMobileTheme/service?action=getCategory&appId=%s&appVersion=%s'
+        }]
+    },
+    {
+        label : '@@ubuilder.customColor@@',
+        type : 'header'
+    },
+    {
+        name : 'dx8background',
+        label : '@@ubuilder.background@@',
+        type : 'color',
+        value : '#FAFBFC'
+    },
+    {
+        name : 'dx8contentbackground',
+        label : '@@ubuilder.contentBackground@@',
+        type : 'color',
+        value : '#FFFFFF'
+    },
+    {
+        name : 'toolbarBackgroundColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.toolbarBackgroundColor@@',
+        type : 'color',
+        value : '#ffffff'
+    },
+    {
+        name : 'toolbarButtonColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.toolbarButtonColor@@',
+        type : 'color',
+        value : '#333333'
+    },
+    {
+        name : 'toolbarActiveColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.toolbarActiveColor@@',
+        type : 'color',
+        value : '#007BFF'
+    },
+    {
+        name : 'tabbarBackgroundColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.tabbarBackgroundColor@@',
+        type : 'color',
+        value : '#ffffff'
+    },
+    {
+        name : 'tabbarTextColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.tabbarTextColor@@',
+        type : 'color',
+        value : '#666666'
+    },
+    {
+        name : 'tabbarActiveColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.tabbarActiveColor@@',
+        type : 'color',
+        value : '#007BFF'
+    },
+    {
+        name : 'dx8headerColor',
+        label : '@@ubuilder.headerColor@@',
+        type : 'color',
+        value : '#F6F6F6'
+    },
+    {
+        name : 'dx8headerFontColor',
+        label : '@@ubuilder.headerFontColor@@',
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
+    },
+    {
+        name : 'dx8navBackground',
+        label : '@@ubuilder.navBackground@@',
+        type : 'color',
+        value : '#FFFFFF'
+    },
+    {
+        name : 'listTitleColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.listTitleColor@@',
+        type : 'color',
+        value : '#666666'
+    },
+    {
+        name : 'listTitleBackgroundColor',
+        label : '@@org.joget.plugin.enterprise.onsenMobileTheme.listTitleBackgroundColor@@',
+        type : 'color',
+        value : '#F5F5F5'
+    },
+    {
+        name : 'dx8navLinkColor',
+        label : '@@ubuilder.navLinkColor@@',
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
+    },
+    {
+        name : 'dx8navLinkIcon',
+        label : '@@ubuilder.navLinkIcon@@',
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
+    },
+    {
+        name : 'dx8navBadge',
+        label : '@@ubuilder.navBadge@@',
+        type : 'color',
+        value : '#007BFF'
+    },
+    {
+        name : 'dx8navBadgeText',
+        label : '@@ubuilder.navBadgeText@@',
+        type : 'color',
+        value : '#FFFFFF'
+    },
+    {
+        name : 'dx8navScrollbarThumb',
+        label : '@@ubuilder.navScrollbarThumb@@',
+        type : 'color',
+        value : '#C4C4C4'
+    },
+    {
+        name : 'dx8buttonBackground',
+        label : '@@ubuilder.buttonBackground@@',
+        type : 'color',
+        value : '#007BFF'
+    },
+    {
+        name : 'dx8buttonColor',
+        label : '@@ubuilder.buttonColor@@',
+        type : 'color',
+        value : '#FFFFFF'
+    },
+    {
+        name : 'dx8primaryColor',
+        label : '@@ubuilder.primaryColor@@',
+        type : 'color',
+        value : '#007BFF'
+    },
+    {
+        name : 'dx8headingBgColor',
+        label : '@@ubuilder.headingBgColor@@',
+        type : 'color',
+        value : '#FFFFFF'
+    },
+    {
+        name : 'dx8headingFontColor',
+        label : '@@ubuilder.headingFontColor@@',
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
+    },
+    {
+        name : 'dx8fontColor',
+        label : '@@ubuilder.fontColor@@',
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
+    },
+    {
+        name : 'dx8contentFontColor',
+        label : '@@ubuilder.contentFontColor@@',
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
+    },
+    {
+        name : 'dx8linkColor',
+        label : '@@ubuilder.linkColor@@',
+        type : 'color',
+        value : '#007BFF'
+    },
+    {
+        name : 'dx8linkActiveColor',
+        label : '@@ubuilder.linkActiveColor@@',
+        type : 'color',
+        value : '#007BFF'
+    }]
+},
+{
+    title : '@@theme.progressive.advanced@@',
+    properties : [
+    {
+        name : 'fav_icon',
+        label : '@@theme.progressive.favIcon@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:16px;height:16px;'
+    },
+    {
+        name : 'logo',
+        label : '@@theme.progressive.logo@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
+    },
+    {
+        name : 'profile',
+        label : '@@theme.progressive.disabledProfile@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'userImage',
+        label : '@@theme.progressive.userImage@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : 'no',
+            label : '@@theme.progressive.userImage.no@@'
+        },{
+            value : '',
+            label : '@@theme.progressive.userImage.gravatar@@'
+        },{
+            value : 'hashVariable',
+            label : '@@theme.progressive.userImage.hashVariable@@'
+        }]
+    },
+    {
+        name : 'userImageUrlHash',
+        label : '@@theme.progressive.userImageUrlHash@@',
+        type : 'textfield',
+        control_field: 'userImage',
+        control_value: 'hashVariable',
+        control_use_regex: 'false',
+        required : 'true'
+    },
+    {
+        name : 'inbox',
+        label : '@@theme.progressive.inbox@@',
+        type : 'selectbox',
+        value : 'current',
+        options : [{
+            value : '',
+            label : '@@theme.progressive.inbox.no@@'
+        },{
+            value : 'all',
+            label : '@@theme.progressive.inbox.all@@'
+        },{
+            value : 'current',
+            label : '@@theme.progressive.inbox.current@@'
+        }]
+    },    
+    {
+        name : 'homeUrl',
+        label : '@@theme.universal.homeUrl@@',
+        type : 'textfield'
+    },    
+    {
+        name : 'shortcutLinkLabel',
+        label : '@@theme.progressive.shortcutLinkLabel@@',
+        value : '@@theme.progressive.shortcut@@',
+        type : 'textfield'
+    },
+    {
+        name : 'shortcut',
+        label : '@@theme.progressive.shortcut@@',
+        description : '@@theme.progressive.shortcut.desc@@',
+        type : 'grid',
+        columns : [{
+            key : 'label',
+            label : '@@theme.progressive.label@@'
+        },
+        {
+            key : 'href',
+            label : '@@theme.progressive.href@@'
+        },
+        {
+            key : 'target',
+            label : '@@theme.progressive.target@@',
+            options : [
+                {value: '', label: ''},
+                {value: '_blank', label: '@@theme.progressive.target.newTab@@'},
+            ]
+        },
+        {
+            key : 'isPublic',
+            label : '@@theme.progressive.shortcut.public@@',
+            type : 'truefalse'
+        }]
+    },
+    {
+        name : 'userMenu',
+        label : '@@theme.progressive.userMenu@@',
+        description : '@@theme.progressive.userMenu.desc@@',
+        type : 'grid',
+        columns : [{
+            key : 'label',
+            label : '@@theme.progressive.label@@'
+        },
+        {
+            key : 'href',
+            label : '@@theme.progressive.href@@'
+        },
+        {
+            key : 'target',
+            label : '@@theme.progressive.target@@',
+            options : [
+                {value: '', label: ''},
+                {value: '_blank', label: '@@theme.progressive.target.newTab@@'},
+            ]
+        }]
+    },
+    {
+        name : 'fontControl',
+        label : '@@theme.universal.fontControl@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'darkMode',
+        label : '@@theme.ajaxUniversalTheme.darkTheme.darkTheme@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'enableResponsiveSwitch',
+        label : '@@theme.progressive.enableResponsiveSwitch@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'removeAssignmentTitle',
+        label : '@@theme.progressive.removeAssignmentTitle@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'homeAttractBanner',
+        label : '@@theme.progressive.homeAttractBanner@@',
+        type : 'codeeditor',
+        mode : 'html',
+        developer_mode : 'advanced'
+    },
+    {
+        name : 'css',
+        label : '@@theme.progressive.customCss@@',
+        type : 'codeeditor',
+        mode : 'css',
+        developer_mode : 'advanced'
+    },
+    {
+        name : 'js',
+        label : '@@theme.progressive.customJavascript@@',
+        type : 'codeeditor',
+        mode : 'javascript',
+        developer_mode : 'advanced'
+    },
+    {
+        name : 'subheader',
+        label : '@@theme.progressive.subHeader@@',
+        type : 'codeeditor',
+        mode : 'html',
+        developer_mode : 'advanced'
+    },
+    {
+        name : 'subfooter',
+        label : '@@theme.progressive.subFooter@@',
+        type : 'codeeditor',
+        mode : 'html',
+        developer_mode : 'advanced'
+    },
+    {
+        name: 'disableHelpGuide',
+        label: '@@theme.progressive.disableHelpGuide@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }]
+},
+{
+    title : '@@pwa.settings@@',
+    properties : [
+    {
+        name: 'disablePwa',
+        label: '@@pwa.disablePwa@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    },
+    {
+        name: 'disablePush',
+        label: '@@push.disablePush@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    },
+    {
+        name: 'urlsToCache',
+        label: '@@pwa.urlsToCache@@',
+        type:'textarea',
+        description: '@@pwa.urlsToCache.desc@@',
+        cols:'40',
+        rows:'10'
+    }],
+    developer_mode : 'advanced',
+    buttons : [{
+        name : 'testpush',    
+        label : '@@push.sendTestPush@@',
+        ajax_url : '[CONTEXT_PATH]/web/json/push/message',
+        ajax_method : 'POST',
+        addition_fields : [
+        {
+            name : 'username',
+            label : '@@push.username@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'title',
+            label : '@@push.title@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'text',
+            label : '@@push.text@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'url',
+            label : '@@push.url@@',
+            type : 'textfield',
+            required : 'False'
+        },
+        {
+            name : 'icon',
+            label : '@@push.icon@@',
+            type : 'textfield',
+            required : 'False'
+        },
+        {
+            name : 'badge',
+            label : '@@push.badge@@',
+            type : 'textfield',
+            required : 'False'
+        }]
+    }]
+}]
