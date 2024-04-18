@@ -258,6 +258,20 @@ onsenMobileTheme = {
         AjaxComponent.overrideFormEvent($("#category-container"));
         OnsenMobileAjaxComponent.initContent($(target));
         AjaxMenusCount.init();
+        
+        // Check if any canvas elements were found. If found, add an event listener to disable pull-to-refresh when drawing.
+        var $canvasElements = $(target).find('canvas');
+        if ($canvasElements.length > 0) {
+            let pullHook = $(target).find('ons-pull-hook');
+            $canvasElements.each(function () {
+                $(this).on('touchstart mousedown', function (e) {
+                    pullHook.prop('disabled', true);
+                });
+                $(this).on('touchend mouseup', function (e) {
+                    pullHook.prop('disabled', false);
+                });
+            });
+        }
 
         if ($(target).find(".c-overflow").length > 0) {
             AjaxUniversalTheme.scrollBar(".c-overflow", "y");
