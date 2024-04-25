@@ -326,6 +326,21 @@ ons-pull-hook#pull-hook + ons-tabbar#onsenTabbar {
     .main-component.Dashboard {
         padding: 0 15px !important;
     }
+    .fc-toolbar-chunk {
+        width: 100%;
+    }
+    .fc-today-button.btn.btn-primary{
+        width: 20% !important;
+    }
+    div.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > div:nth-child(3) {
+        position: absolute;
+    }
+    div.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > div:nth-child(3) > div.btn-group{
+        float: right;
+    }
+    .fc .fc-toolbar-title{
+        margin-top: 5px !important;
+    }
 }
 @media(min-width: 767px) {
     .dataList .table-wrapper:has(table) {
@@ -383,6 +398,8 @@ ons-pull-hook#pull-hook + ons-tabbar#onsenTabbar {
 .toolbar__title {
     font-size: 20px;
     font-weight: 600;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 #content main button[class*=button], #content main input[class*=button] {
     width: 100%;

@@ -1,5 +1,5 @@
 [{
-    title : '@@theme.ajaxUniversalTheme.config@@',
+    title : '@@org.joget.plugin.enterprise.onsenMobileTheme.config@@',
     properties : [
     {
         name : 'horizontal_menu',

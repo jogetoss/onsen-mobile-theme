@@ -538,7 +538,6 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
         String jscss = "";
         jscss += super.getInternalJsCssLib(data);
         if (!isAjaxContent(data) && !"true".equalsIgnoreCase(userview.getParamString("isPreview")) && !(data.get("is_login_page") != null && ((Boolean) data.get("is_login_page"))) && !(data.get("is_popup_view") != null && ((Boolean) data.get("is_popup_view")))) {
-            jscss += "\n<script src=\"" + data.get("context_path") + "/plugin/" + getClassName() + "/js/onsenMobileCustom.js\" defer></script>";
             jscss += "\n<script>" + getContentPlaceholderRules() + "</script>";
         }
         return jscss;

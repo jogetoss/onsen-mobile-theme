@@ -40,7 +40,7 @@ document.addEventListener('prechange', function (event) {
             }
             // If href is not null and matches current URL, make Ajax call
             if (href !== null) {
-                if (AjaxComponent.isCurrentUserviewUrl(href)) {
+                if (AjaxComponent.isCurrentUserviewUrl(href) || window.name === "preview-iframe") {
                     OnsenMobileAjaxComponent.call($("#content.page_content"), href, "GET", null, null, null, null, targetTemplateId);
                 }
             }
@@ -72,9 +72,9 @@ document.addEventListener('init', function (event) {
         var href = $(element).find('a')[0].getAttribute('href');
         var label = $(element).find('span')[0].textContent;
         if (href === null) {
-            $(element).find('a').click();
+            $(element).find('a')[0].click();
         } else {
-            if (AjaxComponent.isCurrentUserviewUrl(href)) {
+            if (AjaxComponent.isCurrentUserviewUrl(href) || window.name === "preview-iframe") {
                 // Push a new page using OnsenMobileAjaxComponent
                 OnsenMobileAjaxComponent.pushPage(true, 'template_navi-page', label, 'slide', function (template) {
                     // Call to load the content
@@ -103,7 +103,9 @@ document.addEventListener('init', function (event) {
     //load for home, login and logout buttons
     window.fn.load = function (link) {
         var menu = document.getElementById('menu');
-        OnsenMobileAjaxComponent.call($("#content.page_content"), link, "GET", null, null, null, null, null);
+        if (AjaxComponent.isCurrentUserviewUrl(link)) {
+            OnsenMobileAjaxComponent.call($("#content.page_content"), link, "GET", null, null, null, null, null);
+        }
         menu.close();
     };
     
@@ -125,6 +127,11 @@ document.addEventListener('init', function (event) {
             page.querySelector('ons-toolbar .toolbar__title').innerHTML = page.data.title;
         }
     }
+    $(document).on('click', 'ons-back-button', function (event) {
+        setTimeout(function () {
+            $(window).trigger('resize'); //in order for datalist to render in correct viewport
+        }, 5);
+    });
 });
 
 window.fn = {};
@@ -138,10 +145,12 @@ window.fn.open = function() {
 // Modify some of the methods from AjaxUniversalTheme to make it work on onsenMobileTheme
 onsenMobileTheme = {
     callback: function (data, template) {
-        AjaxComponent.unbindEvents(); //remove all binded evernts
-        AjaxUniversalTheme.clearDynamicElement();
-        AjaxUniversalTheme.updateLoginUrl();
-
+        if (!window.name === "preview-iframe") {
+            AjaxComponent.unbindEvents(); //remove all binded evernts
+            AjaxUniversalTheme.clearDynamicElement();
+            AjaxUniversalTheme.updateLoginUrl();
+        }
+        
         if (data.indexOf("ajaxtheme_loading_container") !== -1) {
             var html = $(data);
             var title = $(html).find("#ajaxtheme_loading_title");
@@ -234,7 +243,9 @@ onsenMobileTheme = {
         $("body").attr("id", menuId);
 
         $("title").html($(title).html());
-        AjaxUniversalTheme.updateMenus(menus);
+        if (!window.name === "preview-iframe") {
+             AjaxUniversalTheme.updateMenus(menus);
+        }
         var target;
         //Check if template exist
         if (template !== null && template !== undefined) {
@@ -259,16 +270,32 @@ onsenMobileTheme = {
         OnsenMobileAjaxComponent.initContent($(target));
         AjaxMenusCount.init();
         
+        //disable buttons in preview
+        if (window.name === "preview-iframe") {
+            $(target).find('button[class*=button], input[class*=button]').prop('disabled', true);
+        }
+        
         // Check if any canvas elements were found. If found, add an event listener to disable pull-to-refresh when drawing.
         var $canvasElements = $(target).find('canvas');
         if ($canvasElements.length > 0) {
             let pullHook = $(target).find('ons-pull-hook');
+            let swipeableTab = false;
             $canvasElements.each(function () {
                 $(this).on('touchstart mousedown', function (e) {
                     pullHook.prop('disabled', true);
+                    var tabbar = $('ons-tabbar[position="bottom"]');
+                    if (tabbar.attr('swipeable') !== undefined) {
+                        swipeableTab = true;
+                    }
+                    $('ons-tabbar').removeAttr('swipeable');
                 });
                 $(this).on('touchend mouseup', function (e) {
                     pullHook.prop('disabled', false);
+                    if (swipeableTab) {
+                        $('ons-tabbar').attr('swipeable', '');
+                    } else {
+                        $('ons-tabbar[position="top"]').attr('swipeable', '');
+                    }
                 });
             });
         }
@@ -344,16 +371,22 @@ OnsenMobileAjaxComponent = {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
-                    let template = "template_multiPurposeTemplate";
-                    if (OnsenMobileAjaxComponent.isPageLink(a)) {
-                        template = OnsenMobileAjaxComponent.getTopTemplate();
-                        OnsenMobileAjaxComponent.call($(a), href, "GET", null, null, null, null, template);
+                    if (target === "_top") {
+                        window.top.location = href;
+                    } else if (target === "_parent") {
+                        window.parent.location = href;
                     } else {
-                        OnsenMobileAjaxComponent.pushPage(true, template, null, null, function (template) {
+                        let template = "template_multiPurposeTemplate";
+                        if (OnsenMobileAjaxComponent.isPageLink(a)) {
+                            template = OnsenMobileAjaxComponent.getTopTemplate();
                             OnsenMobileAjaxComponent.call($(a), href, "GET", null, null, null, null, template);
-                        });
+                        } else {
+                            OnsenMobileAjaxComponent.pushPage(true, template, null, null, function (template) {
+                                OnsenMobileAjaxComponent.call($(a), href, "GET", null, null, null, null, template);
+                            });
+                        }
+                        return false;
                     }
-                    return false;
                 }
                 return true;
             });
@@ -380,7 +413,7 @@ OnsenMobileAjaxComponent = {
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined || confirm(confirmMsg)) {
-                        if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
+                        if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false && !(target === "_top" || target === "_parent")) {
                             let template = "template_multiPurposeTemplate";
                             OnsenMobileAjaxComponent.pushPage(true, template, null, null, function (template) {
                                 OnsenMobileAjaxComponent.call($(btn), url, "GET", null, null, null, null, template);
@@ -438,6 +471,7 @@ OnsenMobileAjaxComponent = {
                             if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined || confirm(confirmMsg)) {
                                 if ($(btn).attr('id') === 'cancel') {
                                     OnsenMobileAjaxComponent.pushPage(false, null, null, null, function (template) {
+                                        $(window).trigger('resize');
                                     });
                                 } else {
                                     let template = "template_multiPurposeTemplate";
@@ -614,8 +648,7 @@ OnsenMobileAjaxComponent = {
         if ($(".ma-backdrop").is(":visible")) {
             $(".ma-backdrop").trigger("click.sidebar-toggled");
         }
-        
-        if (!AjaxComponent.isCurrentUserviewUrl(url) || (typeof PwaUtil !== 'undefined' && PwaUtil.isOnline === false ) || AjaxComponent.isLanguageSwitching(url)) {
+        if ((!AjaxComponent.isCurrentUserviewUrl(url) || (typeof PwaUtil !== 'undefined' && PwaUtil.isOnline === false ) || AjaxComponent.isLanguageSwitching(url)) && !url.includes("builderPreview")) {
             window.top.location.href = url; 
             return;
         }
@@ -660,7 +693,7 @@ OnsenMobileAjaxComponent = {
                 return;
             }
         } else {
-            if (window['AjaxUniversalTheme'] === undefined) { 
+            if (window['AjaxUniversalTheme'] === undefined && !url.includes("builderPreview")) { 
                 window.top.location.href = url;
                 return;
             }
@@ -689,6 +722,26 @@ OnsenMobileAjaxComponent = {
             formData.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
             args["body"] = formData;
         }
+        
+        //modified the preview link to actual link
+        if (url.indexOf("builderPreview") !== -1) {
+            var parts = url.split("/");
+            var UIPath = parts[parts.length - 1];
+
+            var modifiedUrl = url.replace('console/app', 'userview');
+            modifiedUrl = modifiedUrl.replace(/\/userview\/builderPreview\/.*/, "").replace(/\/$/, "");
+            
+            var replaceParts = modifiedUrl.split("/");
+            replaceParts[replaceParts.length - 1] = 'v/_/' + UIPath;
+            var modifiedUrl = replaceParts.join("/");
+            
+            url = modifiedUrl;
+            var baseUrl = window.location.origin;
+            if(!url.includes(baseUrl)){
+                url = baseUrl + url;
+            }
+        }
+        
         fetch(url, args)
         .then(function (response) {
             if (response.status === 403) {
@@ -1020,19 +1073,56 @@ OnsenMobileAjaxComponent = {
 $(function () {
     OnsenMobileAjaxComponent.initAjax($("body"));
     setTimeout(function () {
-        var href = window.location.href;
+        var href = window.location.pathname;
+        var newHref = $('ons-tab.active:not(.tabbar--top__item)').attr('href'); 
+        var isInnerTab = false;
+
         if (href.indexOf("jw/web/login") === -1) {
-            // Get the href of the active tab (excluding inner tabs)
-            href = $('ons-tab.active:not(.tabbar--top__item)').attr('href');
-            if (href !== null && href !== undefined) {
-                if (AjaxComponent.isCurrentUserviewUrl(href)) {
-                    OnsenMobileAjaxComponent.call($("#content.page_content"), href, "GET", null, null, null, null);
+            var $tab = $('ons-tab[href*=\'' + href + '\']');
+            // Check if this there is a tab for the href
+            if ($tab.length > 0 && href !== newHref) {
+                $tab.each(function (index, element) {
+                    if ($(element).hasClass('tabbar--top__item')) {
+                        isInnerTab = true;
+                    }
+                });
+                if ($tab.length > 1) {
+                    $tab = $tab.eq(0);
+                }
+
+                if (isInnerTab) {
+                    // Activate the parent tab and inner tab
+                    var parentPage = $tab.closest('ons-page');
+                    var parentTab = $('ons-tab[id*=\'' + parentPage.attr('id') + '\']:not(.tabbar--top__item)');
+                    parentTab.click();
+                    $tab.click();
+                } else {
+                    // Activate the tab
+                    $tab.click();
                 }
             } else {
-                // set href to the current window location
-                href = window.location.href;
-                OnsenMobileAjaxComponent.call($("#content.page_content"), href, "GET", null, null, null, null);
+                // Not a tab
+                if (newHref !== null && newHref !== undefined) {
+                    if (AjaxComponent.isCurrentUserviewUrl(newHref)) {
+                        var template = OnsenMobileAjaxComponent.getTopTemplate();
+                        OnsenMobileAjaxComponent.call($("#content.page_content"), newHref, "get", null, null, null, null, template);
+                    }
+                    
+                    // If the current href is not the first tab href, then push a new page for the href
+                    if (href !== newHref) {
+                        var template = "template_multiPurposeTemplate";
+                        OnsenMobileAjaxComponent.pushPage(true, template, null, null, function (template) {
+                            OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null, template);
+                        });
+                    }
+                } else {
+                    // Set href to the current window location
+                    href = window.location.href;
+                    if (AjaxComponent.isCurrentUserviewUrl(href)) {
+                        OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null);
+                    }
+                }
             }
-        } 
-    }, 50);
+        }
+    }, 200);
 });
