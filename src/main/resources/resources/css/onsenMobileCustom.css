@@ -40,6 +40,10 @@ body.embeded, body.embeded #content.page_content {
 .list-title > span > i {
     padding-right: 5px;
 }
+@media (max-width: 768px) {
+ body.adminBarShown #menu {
+    height: calc(100vh - 44px);
+}
 .list-item a span,
 ons-list.usermenu{
     font-size: 15px;
