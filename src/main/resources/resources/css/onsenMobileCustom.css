@@ -41,8 +41,12 @@ body.embeded, body.embeded #content.page_content {
     padding-right: 5px;
 }
 @media (max-width: 768px) {
- body.adminBarShown #menu {
-    height: calc(100vh - 44px);
+    body.adminBarShown #menu {
+        height: calc(100vh - 44px);
+    }
+}
+body.adminBarShown #menu {
+    height: calc(100vh - 30px);
 }
 .list-item a span,
 ons-list.usermenu{
