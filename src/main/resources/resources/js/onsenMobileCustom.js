@@ -352,6 +352,26 @@ onsenMobileTheme = {
         }, 5);
         onsenMobileTheme.moveListActiontoBottom(template);
         onsenMobileTheme.addPullHookEvent(template);
+        
+        //check if scroll to element exist
+        var currentURL = window.location.href;
+        if (currentURL.indexOf('#') !== -1) {
+            // Extract the last part of the URL path
+            var pathParts = currentURL.split('/');
+            var lastPath = pathParts[pathParts.length - 1];
+
+            // Check if the last part of the URL path contains #
+            if (lastPath.indexOf('#') !== -1) {
+                // Split the last part of the URL path at #
+                var parts = lastPath.split('#');
+                // Extract the value after #
+                var valueAfterHash = parts[1];
+                setTimeout(function () {
+                    //wait for the page fully loaded then scroll to element
+                    OnsenMobileAjaxComponent.scrollToElement('#' + valueAfterHash);
+                }, 1000);
+            }
+        }
     }
 };
 
@@ -390,11 +410,6 @@ OnsenMobileAjaxComponent = {
         },1);
     },
     
-    // Function to check if a given element is a page link
-    isPageLink : function(a) {
-        return $(a).closest("span.pagelinks").length > 0;
-    },
-    
     /*
      * Override the link behaviour
      */
@@ -416,9 +431,10 @@ OnsenMobileAjaxComponent = {
                         window.parent.location = href;
                     } else {
                         let template = "template_multiPurposeTemplate";
-                        if (OnsenMobileAjaxComponent.isPageLink(a)) {
-                            template = OnsenMobileAjaxComponent.getTopTemplate();
-                            OnsenMobileAjaxComponent.call($(a), href, "GET", null, null, null, null, template);
+                        if (href.charAt(0) === '#') {
+                            OnsenMobileAjaxComponent.scrollToElement(href);
+                        } else if (href.charAt(0) === '?') {
+                            OnsenMobileAjaxComponent.call($(a), href, "GET", null);
                         } else {
                             OnsenMobileAjaxComponent.pushPage(true, template, null, null, function (template) {
                                 OnsenMobileAjaxComponent.call($(a), href, "GET", null, null, null, null, template);
@@ -430,6 +446,23 @@ OnsenMobileAjaxComponent = {
                 return true;
             });
         }, 1);
+    },
+    
+    scrollToElement: function(href){
+        if (href === '#') {
+            // Scroll to the top of the page
+            history.pushState(null, '', href);
+            var parent = $('ons-page.page[shown]:not(.page--wrapper)[id*="template"] .page__content').animate({ scrollTop: 0 }, 'slow');
+            parent.animate({ scrollTop: 0 }, 'smooth');
+        } else if (href.charAt(0) === '#') {
+            // Scroll to the target element
+            history.pushState(null, '', href);
+            var target = document.querySelector(href);
+            console.log(target);
+            if (target) {
+                target.scrollIntoView({behavior: 'smooth'});
+            }
+        }
     },
     
     /*
