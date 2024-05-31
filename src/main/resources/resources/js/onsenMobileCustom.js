@@ -1,4 +1,5 @@
 var multiPurposeTemplateCount = 1;
+var isDisabled = false;
 
 document.addEventListener('prechange', function (event) {
     //handle auto scolling for inner tab
@@ -131,6 +132,44 @@ document.addEventListener('init', function (event) {
         setTimeout(function () {
             $(window).trigger('resize'); //in order for datalist to render in correct viewport
         }, 5);
+    });
+        
+    //calculation for blockui size and postion
+    $(document).on('click', '.ps_progress_container', function (event) {
+        if (!isDisabled) {
+            isDisabled = true;
+
+            var parent = $('ons-page.page[shown]:not(.page--wrapper)[id*="template"] .page__content #content');
+            var element = $(this).prev('.blockui');
+            
+            //calculate the top value 
+            var parentOffset = parent.offset();
+            var elementOffset = element.offset();
+            
+            //calculate the left value
+            var widthRelativeToParent = elementOffset.left - parentOffset.left;
+            var heightRelativeToParent = elementOffset.top - parentOffset.top;
+
+            element.css({
+                'left': '-' + widthRelativeToParent + 'px',
+                'top': '-' + heightRelativeToParent + 'px',
+                'height': parent.outerHeight(true) + 'px',
+                'width': parent.outerWidth(true) + 'px'
+            });
+
+            setTimeout(function () {
+                isDisabled = false;
+            }, 500); // Enable after 0.5 second
+        }
+    });
+
+    $(document).on('click', '.blockui', function (event) {
+        $(this).css({
+            'left': '',
+            'top': '',
+            'height': '',
+            'width': ''
+        });
     });
 });
 
