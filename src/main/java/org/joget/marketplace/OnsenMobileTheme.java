@@ -549,7 +549,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
             label = label.replace(" aria-hidden=\"true\"", ""); // Remove "aria-hidden=\"true\""
         }
 
-        String regex = "<i class=\"([^\"]+)\"></i>";
+        String regex = "<i class=[\"']([^\"']+)[\"']></i>";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(label);
         // Find the matching pattern
@@ -574,7 +574,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
             label = label.replace(" aria-hidden=\"true\"", ""); // Remove "aria-hidden=\"true\""
         }
 
-        String regex = "<i class=\"([^\"]+)\"></i>";
+        String regex = "<i class=[\"']([^\"']+)[\"']></i>";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(label);
         // Find the matching pattern
