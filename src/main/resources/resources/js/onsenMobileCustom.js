@@ -101,12 +101,10 @@ document.addEventListener('init', function (event) {
         menu.close();
     };
     
-    //load for home, login and logout buttons
+    //load for login buttons
     window.fn.load = function (link) {
         var menu = document.getElementById('menu');
-        if (AjaxComponent.isCurrentUserviewUrl(link)) {
-            OnsenMobileAjaxComponent.call($("#content.page_content"), link, "GET", null, null, null, null, null);
-        }
+        OnsenMobileAjaxComponent.call($("#content.page_content"), link, "GET", null, null, null, null, null);
         menu.close();
     };
     
