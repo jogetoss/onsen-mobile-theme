@@ -1193,6 +1193,15 @@ $(function () {
                     }
                 }
             }
+        } else {
+            var tokenName = ConnectionManager.tokenName;
+            var tokenValue = ConnectionManager.tokenValue;
+             var hiddenInput = $('<input>').attr({
+                    type: 'hidden',
+                    name: tokenName,
+                    value: tokenValue
+                });
+            $('#content.page_content #loginForm').append(hiddenInput);
         }
     }, 200);
 });

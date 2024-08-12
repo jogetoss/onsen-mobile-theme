@@ -341,6 +341,9 @@ ons-pull-hook#pull-hook + ons-tabbar#onsenTabbar {
     .fc .fc-toolbar-title{
         margin-top: 5px !important;
     }
+    .dataList .table-wrapper {
+        padding-bottom: 100px;
+    }
 }
 @media(min-width: 767px) {
     .dataList .table-wrapper:has(table) {
@@ -407,8 +410,14 @@ ons-pull-hook#pull-hook + ons-tabbar#onsenTabbar {
     text-overflow: ellipsis;
     overflow: hidden;
 }
-#content main button[class*=button], #content main input[class*=button] {
+#content main button[class*=button]:not(.selector_button), #content main input[class*=button]:not(.selector_button) {
     width: 100%;
+    padding: .35rem .5rem;
+    margin-bottom: 8px;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+#content main button[class*=button], #content main input[class*=button]{
     padding: .35rem .5rem;
     margin-bottom: 8px;
     font-size: 16px !important;
@@ -444,9 +453,6 @@ button, input, optgroup, select, textarea {
 }
 .form-cell .form-cell-value span{
     font-size: 17px;
-}
-.selector_element{
-    border: 0px;
 }
 .form-section-title i, .subform-section-title i {
     margin-right: 5px;
@@ -504,9 +510,13 @@ body > .boxy-modal-blackout{
 .ons-ios-scroll-fix ons-splitter-side>.page:not(.page--wrapper) >.page__content .list{
     background-color: var(--theme-sidebar) !important;
 }
+.selector_element{
+    min-height: 34px !important;
+}
 .selector_element .selector_button, .selector_element .selector_button:hover {
     height: auto;
-    padding: 5px 12px !important;
+    padding: 4px 12px !important;
+    font-size: 16px;
 }
 .list-item a.menu-link {
     pointer-events: none;
@@ -553,6 +563,10 @@ body.popupBody {
 }
 .process_status_dl_container.show .blockui, .process_status_dl_container.show_popup .blockui{
     position: absolute !important;
+}
+.calculationField_value{
+    font-size: 17px;
+    line-height: 1.5;
 }
 
 
