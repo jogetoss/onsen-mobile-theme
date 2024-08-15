@@ -266,6 +266,11 @@ ons-pull-hook#pull-hook + ons-tabbar#onsenTabbar {
     border: 0px;
     border-bottom: 0px;
 }
+/* Calendar */
+.fc .fc-toolbar-chunk .btn {
+    width: unset !important;
+}
+
 @media(max-width: 767px) {
     /* filter */
     .filter_form:not(.popup) .filters {
@@ -325,18 +330,6 @@ ons-pull-hook#pull-hook + ons-tabbar#onsenTabbar {
     }
     .main-component.Dashboard {
         padding: 0 15px !important;
-    }
-    .fc-toolbar-chunk {
-        width: 100%;
-    }
-    .fc-today-button.btn.btn-primary{
-        width: 20% !important;
-    }
-    div.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > div:nth-child(3) {
-        position: absolute;
-    }
-    div.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > div:nth-child(3) > div.btn-group{
-        float: right;
     }
     .fc .fc-toolbar-title{
         margin-top: 5px !important;
