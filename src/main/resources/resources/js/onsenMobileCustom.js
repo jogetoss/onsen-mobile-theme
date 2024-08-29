@@ -148,8 +148,19 @@ document.addEventListener('init', function (event) {
             var widthRelativeToParent = elementOffset.left - parentOffset.left;
             var heightRelativeToParent = elementOffset.top - parentOffset.top;
 
+            var leftValue;
+            var rightValue;
+            if (!$('body').hasClass('rtl')) {
+                leftValue = '-' + widthRelativeToParent + 'px';
+                rightValue = '0px';
+            } else {
+                leftValue = '0px';
+                rightValue = widthRelativeToParent;
+            }
+            
             element.css({
-                'left': '-' + widthRelativeToParent + 'px',
+                'left': leftValue,
+                'right': rightValue,
                 'top': '-' + heightRelativeToParent + 'px',
                 'height': parent.outerHeight(true) + 'px',
                 'width': parent.outerWidth(true) + 'px'
@@ -164,6 +175,7 @@ document.addEventListener('init', function (event) {
     $(document).on('click', '.blockui', function (event) {
         $(this).css({
             'left': '',
+            'right': '',
             'top': '',
             'height': '',
             'width': ''
