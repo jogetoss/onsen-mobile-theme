@@ -51,14 +51,14 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
 
     @Override
     public String getVersion() {
-        return "8.0.0";
+        return "8.0.1";
     } 
 
     @Override
     public String getLabel() {
         return getName();
     }
-    
+
     @Override
     public String getDescription() {
         return "Onsen Mobile theme is a mobile theme that enables developers to create cross-platform mobile applications with a native look and feel.";

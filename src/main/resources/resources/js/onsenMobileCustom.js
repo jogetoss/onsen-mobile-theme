@@ -230,6 +230,18 @@ onsenMobileTheme = {
                 var analyzer = JSON.parse(analyzerJson);
                 Analyzer.initAnalyzer(analyzer);
             }
+        } else {
+            var title = $('title')
+            var content = $(data);
+
+            onsenMobileTheme.renderAjaxContent(null, content, title, null, template);
+
+            if (window['Analyzer'] !== undefined && $(html).find("#analyzerJson").length > 0) {
+                Analyzer.clearAnalyzer();
+                var analyzerJson = $(html).find("#analyzerJson").val();
+                var analyzer = JSON.parse(analyzerJson);
+                Analyzer.initAnalyzer(analyzer);
+            }
         }
         themePageInit();
     },
@@ -1193,26 +1205,36 @@ $(function () {
                     // If the current href is not the first tab href, then push a new page for the href
                     if (href !== newHref) {
                         var template = "template_multiPurposeTemplate";
+                        href = window.location.href;
                         OnsenMobileAjaxComponent.pushPage(true, template, null, null, function (template) {
-                            OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null, template);
+                            //OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null, template);
+                            if($('.temp-loaded-container').length > 0){
+                                onsenMobileTheme.callback($('.temp-loaded-container').html(), template);
+                            }else{
+                                OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, template);
+                            }
                         });
                     }
                 } else {
                     // Set href to the current window location
                     href = window.location.href;
                     if (AjaxComponent.isCurrentUserviewUrl(href)) {
-                        OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null);
+                        if($('.temp-loaded-container').length > 0){
+                            onsenMobileTheme.callback($('.temp-loaded-container').html(), null);
+                        }else{
+                            OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null);
+                        }
                     }
                 }
             }
         } else {
             var tokenName = ConnectionManager.tokenName;
             var tokenValue = ConnectionManager.tokenValue;
-             var hiddenInput = $('<input>').attr({
-                    type: 'hidden',
-                    name: tokenName,
-                    value: tokenValue
-                });
+            var hiddenInput = $('<input>').attr({
+                type: 'hidden',
+                name: tokenName,
+                value: tokenValue
+            });
             $('#content.page_content #loginForm').append(hiddenInput);
         }
     }, 200);

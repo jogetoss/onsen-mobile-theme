@@ -19,4 +19,9 @@ ${main_container_before!}
         ${main_container_inner_before!}
     </div>
 </div>
+<div class="temp-loaded-container" style="display: none">
+    <div class="temp-loaded-content">
+        ${content!}
+    </div>
+</div>
 ${main_container_after!}
