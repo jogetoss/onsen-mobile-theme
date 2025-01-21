@@ -20,6 +20,7 @@ ${main_container_before!}
     </div>
 </div>
 <div class="temp-loaded-container" style="display: none">
+    <div class="temp-loaded-title">${title!}</div>
     <div class="temp-loaded-content">
         ${content!}
     </div>

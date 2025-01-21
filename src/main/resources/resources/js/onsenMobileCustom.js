@@ -19,11 +19,6 @@ document.addEventListener('prechange', function (event) {
         $(container).animate({scrollLeft: scrollOffset}, 250);
     }
     
-    // Get the title from the tab element and set it as the page title
-    if (event.tabItem && event.tabItem.hasAttribute('label')) {
-        document.querySelector('ons-toolbar .toolbar__title').innerHTML = event.tabItem.getAttribute('label');
-    }
-    
     // Check if the event has a tabItem and it has an id attribute
     if (event.tabItem && event.tabItem.hasAttribute('id')) {
         let targetTemplateId = null;
@@ -33,7 +28,7 @@ document.addEventListener('prechange', function (event) {
             targetTemplateId = templateId;
         }
         // If the content is empty or the list exists, then reload the page
-        if (!$("ons-page#" + templateId + ' .page__content > #content').length || $("ons-page#" + templateId + ' .page__content > #content .datalist-body-content').length) {
+        if (!$("ons-page#" + templateId + ' .page__content > #content').length || $("ons-page#" + templateId + ' .page__content > #content').length) {
             var href = event.tabItem.getAttribute('href');
             // Find inner tab href
             if (templateId.includes("category")) {
@@ -76,11 +71,32 @@ document.addEventListener('init', function (event) {
             $(element).find('a')[0].click();
         } else {
             if (AjaxComponent.isCurrentUserviewUrl(href) || window.name === "preview-iframe") {
-                // Push a new page using OnsenMobileAjaxComponent
-                OnsenMobileAjaxComponent.pushPage(true, 'template_navi-page', label, 'slide', function (template) {
-                    // Call to load the content
-                    OnsenMobileAjaxComponent.call($("#content.page_content"), href, "GET", null, null, null, null, template);
-                });
+                // UI with tabs will be set as active tab, else push new page
+                var parentList = element.closest('ons-list');
+                if (parentList.querySelectorAll('ons-list-item').length != 1){
+                    var listTitle = parentList.previousElementSibling;
+                    
+                    if (listTitle && listTitle.tagName === 'ONS-LIST-TITLE') {
+                        var activeTabParent = listTitle.textContent.trim();
+                        if(activeTabParent != undefined){
+                            activeTab = setActiveTab(activeTabParent + " > " + element.id.trim());
+                        } else {
+                                activeTab = setActiveTab(label.trim());
+                        }
+                    }
+                } else {
+                    if (parentList.querySelectorAll('ons-list-item').length != 0){
+                        var activeTab = setActiveTab(label.trim());
+                    }
+                }
+
+                if(!activeTab){
+                    // Push a new page using OnsenMobileAjaxComponent
+                    OnsenMobileAjaxComponent.pushPage(true, 'template_navi-page', label, 'slide', function (template) {
+                        // Call to load the content
+                        OnsenMobileAjaxComponent.call($("#content.page_content"), href, "GET", null, null, null, null, template);
+                    });
+                }
             }
         }
         menu.close();
@@ -127,6 +143,9 @@ document.addEventListener('init', function (event) {
         }
     }
     $(document).on('click', 'ons-back-button', function (event) {
+        // set title on previous page
+        document.querySelector('ons-toolbar .toolbar__title').textContent = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
+        
         setTimeout(function () {
             $(window).trigger('resize'); //in order for datalist to render in correct viewport
         }, 5);
@@ -231,8 +250,8 @@ onsenMobileTheme = {
                 Analyzer.initAnalyzer(analyzer);
             }
         } else {
-            var title = $('title')
-            var content = $(data);
+            var title = $(data).first();
+            var content = $(data).last();
 
             onsenMobileTheme.renderAjaxContent(null, content, title, null, template);
 
@@ -374,6 +393,19 @@ onsenMobileTheme = {
         }, 5);
         onsenMobileTheme.moveListActiontoBottom(template);
         onsenMobileTheme.addPullHookEvent(template);
+
+        // Set page title
+        if($('ons-page.page#' + template + ' .toolbar__title').length > 0){
+            if($('ons-page.page#' + template + ' .toolbar__title').text().trim() === ''){
+                var titleText = $(title).text().trim();
+                let parts = titleText.split('>');
+                let trimmedTitle = parts[parts.length - 1].trim();
+                $('ons-page.page#' + template + ' .toolbar__title').html(trimmedTitle);
+            }
+        }
+
+        // Get the title from the tab element and set it as the page title
+        document.querySelector('ons-toolbar .toolbar__title').innerHTML = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
         
         //check if scroll to element exist
         var currentURL = window.location.href;
@@ -1239,3 +1271,43 @@ $(function () {
         }
     }, 200);
 });
+
+function setActiveTab(input) {
+    const [parentName, childId] = input.split('>').map(s => s.trim()); // Split input
+    const tabbars = document.querySelectorAll('#onsenTabbar .ons-swiper-tabbar');
+
+    const lastTabbar = tabbars[tabbars.length - 1];
+    const lastTabbarChildren = lastTabbar.children;
+
+    // Parent tab
+    for (let i = 0; i < lastTabbarChildren.length; i++) {
+        const childLabel = lastTabbarChildren[i].textContent.trim().replace(/\s+/g, ' ');;
+
+        if (childLabel === parentName) {
+            lastTabbar.closest('ons-tabbar').setActiveTab(i);
+            // no children, return
+            if(!childId){
+                return true;
+            }
+            break;
+        }
+    }
+
+    // Children tab
+    for (let j = 0; j < tabbars.length - 1; j++) {
+        const tabbar = tabbars[j];
+        const tabs = tabbar.children;
+
+        for (let i = 0; i < tabs.length; i++) {
+            const tab = tabs[i];
+            const tabId = tab.id.trim();
+
+            if (tabId === ("template_" + childId)) {
+                tabbar.closest('ons-tabbar').setActiveTab(i);
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
