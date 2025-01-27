@@ -405,8 +405,10 @@ onsenMobileTheme = {
         }
 
         // Get the title from the tab element and set it as the page title
-        document.querySelector('ons-toolbar .toolbar__title').innerHTML = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
-        
+        if(document.querySelector('ons-toolbar .toolbar__title') != null){
+            document.querySelector('ons-toolbar .toolbar__title').innerHTML = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
+        }
+
         //check if scroll to element exist
         var currentURL = window.location.href;
         if (currentURL.indexOf('#') !== -1) {
@@ -1276,17 +1278,25 @@ function setActiveTab(input) {
     const [parentName, childId] = input.split('>').map(s => s.trim()); // Split input
     const tabbars = document.querySelectorAll('#onsenTabbar .ons-swiper-tabbar');
 
+    if (!tabbars || tabbars.length === 0) {
+        return false;
+    }
+
     const lastTabbar = tabbars[tabbars.length - 1];
-    const lastTabbarChildren = lastTabbar.children;
+    const lastTabbarChildren = lastTabbar?.children;
+
+    if (!lastTabbarChildren) {
+        return false;
+    }
 
     // Parent tab
     for (let i = 0; i < lastTabbarChildren.length; i++) {
-        const childLabel = lastTabbarChildren[i].textContent.trim().replace(/\s+/g, ' ');;
+        const childLabel = lastTabbarChildren[i].textContent.trim().replace(/\s+/g, ' ');
 
         if (childLabel === parentName) {
             lastTabbar.closest('ons-tabbar').setActiveTab(i);
-            // no children, return
-            if(!childId){
+
+            if (!childId) {
                 return true;
             }
             break;
@@ -1296,7 +1306,11 @@ function setActiveTab(input) {
     // Children tab
     for (let j = 0; j < tabbars.length - 1; j++) {
         const tabbar = tabbars[j];
-        const tabs = tabbar.children;
+        const tabs = tabbar?.children;
+
+        if (!tabs) {
+            continue;
+        }
 
         for (let i = 0; i < tabs.length; i++) {
             const tab = tabs[i];
@@ -1308,6 +1322,6 @@ function setActiveTab(input) {
             }
         }
     }
-    
+
     return false;
 }
