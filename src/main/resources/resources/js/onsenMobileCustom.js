@@ -144,8 +144,9 @@ document.addEventListener('init', function (event) {
     }
     $(document).on('click', 'ons-back-button', function (event) {
         // set title on previous page
-        document.querySelector('ons-toolbar .toolbar__title').textContent = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
-        
+        if(document.querySelector('ons-toolbar .toolbar__title') != null && $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text() != ""){
+            document.querySelector('ons-toolbar .toolbar__title').textContent = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
+        }
         setTimeout(function () {
             $(window).trigger('resize'); //in order for datalist to render in correct viewport
         }, 5);
@@ -405,7 +406,7 @@ onsenMobileTheme = {
         }
 
         // Get the title from the tab element and set it as the page title
-        if(document.querySelector('ons-toolbar .toolbar__title') != null){
+        if(document.querySelector('ons-toolbar .toolbar__title') != null && $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text() != ""){
             document.querySelector('ons-toolbar .toolbar__title').innerHTML = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
         }
 
