@@ -19,10 +19,12 @@ ${main_container_before!}
         ${main_container_inner_before!}
     </div>
 </div>
-<div class="temp-loaded-container" style="display: none">
+
+<template id="temp-loaded-container">
     <div class="temp-loaded-title">${title!}</div>
     <div class="temp-loaded-content">
         ${content!}
     </div>
-</div>
+</template>
+
 ${main_container_after!}

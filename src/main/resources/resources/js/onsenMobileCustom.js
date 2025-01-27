@@ -1242,8 +1242,8 @@ $(function () {
                         href = window.location.href;
                         OnsenMobileAjaxComponent.pushPage(true, template, null, null, function (template) {
                             //OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null, template);
-                            if($('.temp-loaded-container').length > 0){
-                                onsenMobileTheme.callback($('.temp-loaded-container').html(), template);
+                            if($('#temp-loaded-container').length > 0){
+                                onsenMobileTheme.callback($('#temp-loaded-container').html(), template);
                             }else{
                                 OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, template);
                             }
@@ -1253,8 +1253,8 @@ $(function () {
                     // Set href to the current window location
                     href = window.location.href;
                     if (AjaxComponent.isCurrentUserviewUrl(href)) {
-                        if($('.temp-loaded-container').length > 0){
-                            onsenMobileTheme.callback($('.temp-loaded-container').html(), null);
+                        if($('#temp-loaded-container').length > 0){
+                            onsenMobileTheme.callback($('#temp-loaded-container').html(), null);
                         }else{
                             OnsenMobileAjaxComponent.call($("#content.page_content"), href, "get", null, null, null, null);
                         }
