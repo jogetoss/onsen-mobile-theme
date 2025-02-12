@@ -90,7 +90,7 @@ document.addEventListener('init', function (event) {
                     }
                 }
 
-                if(!activeTab){
+                if(window.location.pathname + window.location.search != href && !activeTab){
                     // Push a new page using OnsenMobileAjaxComponent
                     OnsenMobileAjaxComponent.pushPage(true, 'template_navi-page', label, 'slide', function (template) {
                         // Call to load the content
@@ -144,11 +144,24 @@ document.addEventListener('init', function (event) {
     }
     $(document).on('click', 'ons-back-button', function (event) {
         // set title on previous page
+        var titleText = document.querySelector('#pull-hook-template_default').getAttribute('title');
         if(document.querySelector('ons-toolbar .toolbar__title') != null && $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text() != ""){
             document.querySelector('ons-toolbar .toolbar__title').textContent = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
+        } else {
+            let parts = titleText.split('>');
+            let trimmedTitle = parts[parts.length - 1].trim();
+            document.querySelector('ons-toolbar .toolbar__title').textContent = trimmedTitle;
         }
         setTimeout(function () {
             $(window).trigger('resize'); //in order for datalist to render in correct viewport
+
+            // set title and href on back
+            let navigator = $('ons-navigator')[0];
+            if (navigator.pages.length > 1) { 
+                let newUrl = document.querySelector('#pull-hook-template_default').getAttribute('href');
+                history.replaceState({}, '', newUrl);
+                document.title = titleText;
+            }
         }, 5);
     });
         
@@ -288,6 +301,7 @@ onsenMobileTheme = {
 
         if (pullHook) {
             pullHook.setAttribute('href', window.location.href);
+            pullHook.setAttribute('title', document.title);
             pullHook.setAttribute('threshold-height', '-1px');
             pullHook.setAttribute('height', '100px');
             pullHook.addEventListener('changestate', function (event) {

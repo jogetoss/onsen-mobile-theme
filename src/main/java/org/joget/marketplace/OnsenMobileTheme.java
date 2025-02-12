@@ -51,7 +51,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
 
     @Override
     public String getVersion() {
-        return "8.0.2";
+        return "8.0.3";
     } 
 
     @Override

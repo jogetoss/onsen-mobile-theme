@@ -4,7 +4,7 @@
     <groupId>org.joget.marketplace</groupId>
     <artifactId>onsen-mobile-theme</artifactId>
     <packaging>bundle</packaging>
-    <version>8.0.2</version>
+    <version>8.0.3</version>
     <name>onsen-mobile-theme</name>
     <url>https://www.joget.org</url>
     <properties>
