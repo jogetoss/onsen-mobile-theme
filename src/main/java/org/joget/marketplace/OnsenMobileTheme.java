@@ -51,7 +51,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
 
     @Override
     public String getVersion() {
-        return "8.0.3";
+        return "8.0.4";
     } 
 
     @Override
@@ -455,6 +455,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                         String tabId = (String) tab.get("menuId");
                         String icon = (String) tab.get("icon");
                         String active = (String) tab.get("active");
+                        String onclick = (String) tab.get("onclick");
                         
                         // Prepare icon attribute
                         if (icon != null && !icon.isEmpty()) {
@@ -465,7 +466,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                             active = "";
                         }
                         // Append tabbar to template
-                        content += "<ons-tab page=\"template_" + tabId + ".html\" href=\"" + url + "\" id=\"template_" + tabId + "\" label=\"" + label + "\"" + icon + active + ">\n"
+                        content += "<ons-tab page=\"template_" + tabId + ".html\" onclick=\"" + onclick + "\" href=\"" + url + "\" id=\"template_" + tabId + "\" label=\"" + label + "\"" + icon + active + ">\n"
                                 + "</ons-tab>\n";
                     }
                     content += "  </ons-tabbar>";
@@ -583,6 +584,20 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
         }
         return label;
     }
+
+    protected String getLinkValue(String target, String url){
+        String onclick = "";
+        if(!target.equals("")){
+            if ("blank".equals(target)) {
+                onclick = "window.open('" + url + "');return false;";
+            } else if ("self".equals(target)) {
+                onclick = "window.location = '" + url + "';return false;";
+            } else if ("script".equals(target)) {
+                onclick = url + ";return false;";
+            }
+        }
+        return onclick;
+    }
     
     protected Collection<Map<String, String>> getTabList(Map<String, Object> data) {
         Collection<Map<String, String>> output = new ArrayList<Map<String, String>>();
@@ -606,9 +621,16 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                             String label = menu.getPropertyString("label");
                             String icon = getIconFromLabel(label);
                             label = removeIconFromLabel(label);
-                            
-                            String url = menu.getUrl();
-                            
+
+                            String url = menu.getPropertyString("url");
+                            if(url.equals("")){
+                                url = menu.getUrl();
+                            }
+
+                            // support link menu
+                            String target = menu.getPropertyString("target");
+                            String onclick = getLinkValue(target, url);
+                          
                             // Set first inner tab URL
                             if (firstInnerTabUrl.isEmpty()) {
                                 firstInnerTabUrl = url;
@@ -624,6 +646,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                             innerTab.put("label", label);
                             innerTab.put("icon", icon);
                             innerTab.put("url", url);
+                            innerTab.put("onclick", onclick);
                             
                             // Set active flag for the first inner tab
                             if (currentInnerTab == 0) {
@@ -643,7 +666,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                             String categoryLabel = cat.getPropertyString("label");
                             String icon = getIconFromLabel(categoryLabel);
                             categoryLabel = removeIconFromLabel(categoryLabel);
-                                    
+
                             addTemplate(data, newTabID, false, false, innerTabList);
 
                             Map<String, String> setting = new HashMap<>();
@@ -654,6 +677,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                             if (currentTab == 0) {
                                 setting.put("active", "active");
                             }
+                            setting.put("onclick", "");
                             output.add(setting);
                         } else {
                             // If only one inner tab only, use the only one menu as tab
@@ -663,6 +687,8 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                                     String label = innerTabItem.get("label");
                                     String menuId = innerTabItem.get("menuId");
                                     String icon = innerTabItem.get("icon");
+                                    // support link menu
+                                    String onclick = innerTabItem.get("onclick");
                                     
                                     Map<String, String> setting = new HashMap<>();
                                     setting.put("url", url);
@@ -672,6 +698,7 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
                                     if (currentTab == 0) {
                                         setting.put("active", "active");
                                     }
+                                    setting.put("onclick", onclick);
                                     output.add(setting);
                                 }
                             }
