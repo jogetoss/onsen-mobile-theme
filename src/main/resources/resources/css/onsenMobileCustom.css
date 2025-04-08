@@ -613,3 +613,9 @@ body.rtl .form-cell > label.label,
 body.rtl .subform-cell > label.label {
     padding: 12px 0px 0px 10px;
 }
+
+.horizontal_menu .navbar-inner,
+.horizontal_menu #sidebar #navigation,
+.horizontal_menu #content{
+    max-width: unset !important;
+}

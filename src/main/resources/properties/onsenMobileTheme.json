@@ -73,6 +73,7 @@
     {
         name : 'userviewId',
         label : '@@org.joget.plugin.enterprise.onsenMobileTheme.userviewId@@',
+        description : '@@org.joget.plugin.enterprise.onsenMobileTheme.userviewId.desc@@',
         type : 'selectbox',
         required : 'True',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/userview/options'
