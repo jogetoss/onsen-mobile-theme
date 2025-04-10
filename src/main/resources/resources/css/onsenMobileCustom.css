@@ -259,6 +259,12 @@ ons-pull-hook#pull-hook + ons-tabbar#onsenTabbar {
 .page__content:has(.datalist-body-content .filter_form.show){
     overflow: hidden;
 }
+.page__content:has(.popup-picker){
+    overflow: hidden;
+}
+body:has(.popup-picker) {
+    overflow: visible;
+}
 #content .main-body-content {
     border: 0px;
 }
