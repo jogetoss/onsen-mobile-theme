@@ -144,7 +144,22 @@ document.addEventListener('init', function (event) {
     }
     $(document).on('click', 'ons-back-button', function (event) {
         // set title on previous page
-        var titleText = document.querySelector('[id^="pull-hook-template_"]').getAttribute('title');
+        const pullHookElements = document.querySelectorAll('[id^="pull-hook-template_"]');
+
+        let pullHook = null;
+        let titleText = '';
+        let fullUrl = "";
+
+        if (pullHookElements.length >= 3) {
+            pullHook = pullHookElements[pullHookElements.length - 2];
+        } else if (pullHookElements.length >= 1) {
+            pullHook = pullHookElements[0];
+        }
+
+        if (pullHook) {
+            titleText = pullHook.getAttribute('title');
+        }
+
         if(document.querySelector('ons-toolbar .toolbar__title') != null && $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text() != ""){
             document.querySelector('ons-toolbar .toolbar__title').textContent = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
         } else {
@@ -158,23 +173,41 @@ document.addEventListener('init', function (event) {
             // set title and href on back
             let navigator = $('ons-navigator')[0];
             if (navigator.pages.length > 1) { 
-                const activeTab = document.querySelector('ons-tab.active');
-                const pullHook = document.querySelector('[id^="pull-hook-template_"]');
-                let fullUrl = "";
-                if (activeTab && pullHook) {
-                    const href = activeTab.getAttribute('href');
-                    
-                    fullUrl = new URL(href, window.location.origin).href;
-                    
-                    pullHook.setAttribute('href', fullUrl);
+                if(navigator.pages.length == 2){
+                    const activeTab = document.querySelector('.tabbar.ons-tabbar__footer.ons-swiper-tabbar:not(.tabbar--top) ons-tab.active');
+
+                    if (activeTab && pullHook) {
+                        const href = activeTab.getAttribute('href');
+                        
+                        fullUrl = new URL(href, window.location.origin).href;
+                        
+                        pullHook.setAttribute('href', fullUrl);
+                    } else {
+                        fullUrl = pullHook.getAttribute('href');
+                    }
                 } else {
-                    fullUrl = document.querySelector('[id^="pull-hook-template_"]').getAttribute('href');
+                    fullUrl = pullHook.getAttribute('href');
                 }
 
                 history.replaceState({}, '', fullUrl);
                 document.title = titleText;
             }
         }, 5);
+    });
+
+    window.addEventListener("popstate", function (event) {
+        const pullHooks = document.querySelectorAll('ons-pull-hook');
+        let titleText = null;
+
+        pullHooks.forEach(pullHook => {
+        if (pullHook.getAttribute('href') === location.href) {
+            titleText = pullHook.getAttribute('title');
+        }
+        });
+
+        let parts = titleText.split('>');
+        let trimmedTitle = parts[parts.length - 1].trim();
+        document.querySelector('ons-page[shown] .toolbar__title').textContent = trimmedTitle;
     });
         
     //calculation for blockui size and postion
