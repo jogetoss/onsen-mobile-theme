@@ -1,5 +1,25 @@
 var multiPurposeTemplateCount = 1;
 var isDisabled = false;
+let cleanedHistory = false;
+
+// store existing url and title into history
+window.historyStack = window.historyStack || [];
+function storeCurrentPage() {
+  window.historyStack.push({
+    href: window.location.href,
+    title: document.title
+  });
+}
+
+function getLastStoredPage() {
+  return window.historyStack.length > 0 ? window.historyStack[window.historyStack.length - 1] : null;
+}
+
+function cleanLastStoredPage() {
+  if (window.historyStack && window.historyStack.length > 0) {
+    window.historyStack.pop();
+  }
+}
 
 document.addEventListener('prechange', function (event) {
     //handle auto scolling for inner tab
@@ -143,55 +163,23 @@ document.addEventListener('init', function (event) {
         }
     }
     $(document).on('click', 'ons-back-button', function (event) {
-        // set title on previous page
-        const pullHookElements = document.querySelectorAll('[id^="pull-hook-template_"]');
-
-        let pullHook = null;
-        let titleText = '';
-        let fullUrl = "";
-
-        if (pullHookElements.length >= 3) {
-            pullHook = pullHookElements[pullHookElements.length - 2];
-        } else if (pullHookElements.length >= 1) {
-            pullHook = pullHookElements[0];
-        }
-
-        if (pullHook) {
-            titleText = pullHook.getAttribute('title');
+        if (!cleanedHistory) {
+            const lastPage = getLastStoredPage();
+            if (lastPage) {
+                history.replaceState({}, '', lastPage.href);
+                document.title = lastPage.title;
+            }
+            cleanLastStoredPage();
+            cleanedHistory = true;
         }
 
         if(document.querySelector('ons-toolbar .toolbar__title') != null && $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text() != ""){
             document.querySelector('ons-toolbar .toolbar__title').textContent = $('#onsenTabbar > .tabbar > ons-tab.active .tabbar__label').text();
-        } else {
-            let parts = titleText.split('>');
-            let trimmedTitle = parts[parts.length - 1].trim();
-            document.querySelector('ons-toolbar .toolbar__title').textContent = trimmedTitle;
         }
+
         setTimeout(function () {
             $(window).trigger('resize'); //in order for datalist to render in correct viewport
-
-            // set title and href on back
-            let navigator = $('ons-navigator')[0];
-            if (navigator.pages.length > 1) { 
-                if(navigator.pages.length == 2){
-                    const activeTab = document.querySelector('.tabbar.ons-tabbar__footer.ons-swiper-tabbar:not(.tabbar--top) ons-tab.active');
-
-                    if (activeTab && pullHook) {
-                        const href = activeTab.getAttribute('href');
-                        
-                        fullUrl = new URL(href, window.location.origin).href;
-                        
-                        pullHook.setAttribute('href', fullUrl);
-                    } else {
-                        fullUrl = pullHook.getAttribute('href');
-                    }
-                } else {
-                    fullUrl = pullHook.getAttribute('href');
-                }
-
-                history.replaceState({}, '', fullUrl);
-                document.title = titleText;
-            }
+            cleanedHistory = false;
         }, 5);
     });
 
@@ -785,6 +773,7 @@ OnsenMobileAjaxComponent = {
                 }
             });
         }
+         storeCurrentPage();
     },
     
     removeParamsfromURL: function (url) {
