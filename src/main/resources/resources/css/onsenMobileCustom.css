@@ -236,6 +236,10 @@ textarea {
     background-color: #fff;
     border-top: 1px solid var(--border-color);
     bottom: -1px;
+    right: 1px;
+}
+.dataList .actions > .process_reassign_wrapper {
+    width: 100%;
 }
 .toolbar {
     background-size: 100% 0px;
