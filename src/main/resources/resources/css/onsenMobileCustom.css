@@ -231,7 +231,7 @@ textarea {
     margin: 0px !important;
     padding: 15px;
     position: fixed;
-    z-index: 10000;
+    z-index: 100;
     width: 100%;
     background-color: #fff;
     border-top: 1px solid var(--border-color);
