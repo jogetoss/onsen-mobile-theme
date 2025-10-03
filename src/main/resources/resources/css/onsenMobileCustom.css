@@ -239,11 +239,15 @@ textarea {
     margin: 0px !important;
     padding: 15px;
     position: fixed;
-    z-index: 10000;
+    z-index: 100;
     width: 100%;
     background-color: #fff;
     border-top: 1px solid var(--border-color);
     bottom: -1px;
+    right: 1px;
+}
+.dataList .actions > .process_reassign_wrapper {
+    width: 100%;
 }
 .toolbar {
     background-size: 100% 0px;
