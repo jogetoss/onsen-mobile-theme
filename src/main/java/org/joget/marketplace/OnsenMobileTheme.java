@@ -952,4 +952,12 @@ public class OnsenMobileTheme extends AjaxUniversalTheme{
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
+
+    @Override
+    public String getLoginForm(Map<String, Object> data) {
+        if (!data.containsKey("loginBackground") && !this.getPropertyString("loginBackground").isEmpty()) {
+            data.put("loginBackground", "<style>#content.page_content {background-size:cover; background-image:url('" + this.getPropertyString("loginBackground") + "');}</style>");
+        }
+        return super.getLoginForm(data);
+    }
 }
