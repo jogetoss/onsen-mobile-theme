@@ -249,6 +249,11 @@ textarea {
 .dataList .actions > .process_reassign_wrapper {
     width: 100%;
 }
+
+.chosen-container .chosen-drop .chosen-results {
+    max-height: 64px;
+}
+
 .toolbar {
     background-size: 100% 0px;
 }
