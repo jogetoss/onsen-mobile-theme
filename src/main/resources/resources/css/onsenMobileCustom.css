@@ -250,6 +250,10 @@ textarea {
     width: 100%;
 }
 
+.process_reassignment_input {
+    left:50% !important; 
+}
+
 .chosen-container .chosen-drop .chosen-results {
     max-height: 64px;
 }
