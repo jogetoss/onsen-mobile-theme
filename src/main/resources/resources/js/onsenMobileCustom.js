@@ -21,6 +21,19 @@ function cleanLastStoredPage() {
   }
 }
 
+// Runs before onsenui.js's body listener (which pops the page on ESC), so ESC in a field just closes it
+document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape' && event.keyCode !== 27) {
+        return;
+    }
+    var target = event.target;
+    var tagName = target && target.tagName ? target.tagName.toLowerCase() : '';
+    var isFormField = tagName === 'input' || tagName === 'select' || tagName === 'textarea' || (target && target.isContentEditable);
+    if (isFormField) {
+        event.stopPropagation();
+    }
+}, true);
+
 document.addEventListener('prechange', function (event) {
     //handle auto scolling for inner tab
     var container = $(event.tabItem).closest('.tabbar--top');
@@ -163,6 +176,8 @@ document.addEventListener('init', function (event) {
         }
     }
     $(document).on('click', 'ons-back-button', function (event) {
+        // restore the underlying page id before revealed
+        OnsenMobileAjaxComponent.restoreContentIds();
         if (!cleanedHistory) {
             const lastPage = getLastStoredPage();
             if (lastPage) {
@@ -387,6 +402,19 @@ onsenMobileTheme = {
         $(target).html('<ons-pull-hook id="pull-hook-' + template + '">Pull to refresh</ons-pull-hook><div id="content" class="page_content"><main>' + $(content).html() + '</main></div>');
         $(target).attr("aria-live", "polite");
 
+        // Remove duplicate ids left over from stale pages still sitting in the DOM
+        $(target).find('[id]').each(function () {
+            var id = this.id;
+            if (!id) {
+                return;
+            }
+            $('[id="' + id + '"]').not(this).each(function () {
+                if (!$.contains(target[0], this)) {
+                    $(this).removeAttr('id');
+                }
+            });
+        });
+
         $(".home_banner").remove();
         $("body").removeClass("has_home_banner");
         if ($(homeBanner).find(".home_banner").length > 0) {
@@ -435,12 +463,18 @@ onsenMobileTheme = {
         $("html, body").animate({
             scrollTop: 0
         }, 0);
+        $(target).scrollTop(0);
+
+        onsenMobileTheme.moveListActiontoBottom(template);
+        onsenMobileTheme.addPullHookEvent(template);
+
+        // Undo the negative margin-top ons-pull-hook leaves on .page__content, which hides content behind the header
+        $(target).css('margin-top', '');
 
         setTimeout(function () {
             $(window).trigger('resize'); //inorder for datalist to render in correct viewport
+            $(target).css('margin-top', '');
         }, 5);
-        onsenMobileTheme.moveListActiontoBottom(template);
-        onsenMobileTheme.addPullHookEvent(template);
 
         // Set page title
         if($('ons-page.page#' + template + ' .toolbar__title').length > 0){
@@ -647,6 +681,14 @@ OnsenMobileAjaxComponent = {
                             if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined || confirm(confirmMsg)) {
                                 if ($(btn).attr('id') === 'cancel') {
                                     OnsenMobileAjaxComponent.pushPage(false, null, null, null, function (template) {
+                                        // fix cancel/back button not restoring previous address bar and title
+                                        cleanLastStoredPage();
+                                        var lastPage = getLastStoredPage();
+                                        if (lastPage) {
+                                            history.replaceState({}, '', lastPage.href);
+                                            document.title = lastPage.title;
+                                        }
+                                        cleanLastStoredPage();
                                         $(window).trigger('resize');
                                     });
                                 } else {
@@ -762,6 +804,8 @@ OnsenMobileAjaxComponent = {
                 }
             });
         } else {
+            // restore the underlying page id before revealed
+            OnsenMobileAjaxComponent.restoreContentIds();
             // Pop the page from the navigator
             document.querySelector('#onsen-navigator').popPage({
                 callback: function () {
@@ -775,7 +819,12 @@ OnsenMobileAjaxComponent = {
         }
          storeCurrentPage();
     },
-    
+
+    // re-add the "content" id if renderAjaxContent's duplicate-id cleanup stripped it
+    restoreContentIds: function () {
+        $('.page_content:not([id])').attr('id', 'content');
+    },
+
     removeParamsfromURL: function (url) {
         if (url.indexOf('?') !== -1) {
             return url.split('?')[0];
@@ -806,6 +855,8 @@ OnsenMobileAjaxComponent = {
      * Ajax call to retrieve the component html
      */
     call: function (element, url, method, formData, customCallback, customErrorCallback, isTriggerByEvent, template, targetUrl) {
+        // snapshot the URL now, since a POST save won't redirect and never updates it later
+        var preCallUrl = window.location.href;
         if (url.indexOf("?") === 0) {
             template = OnsenMobileAjaxComponent.getTopTemplate();
             var currentUrl = window.location.href;
@@ -1049,7 +1100,12 @@ OnsenMobileAjaxComponent = {
                     }
                 }
                 if (!isAjaxComponent && window['onsenMobileTheme'] !== undefined) {
-                    if (OnsenMobileAjaxComponent.redirectToPreviousPage(targetUrl, url)) {
+                    if (OnsenMobileAjaxComponent.redirectToPreviousPage(targetUrl, url) || OnsenMobileAjaxComponent.hasExitedFormMode(preCallUrl, data)) {
+                        // fix the address bar, since the save/back POST never synced it
+                        var cleanUrl = OnsenMobileAjaxComponent.stripFormModeParams(preCallUrl);
+                        if (cleanUrl !== window.location.href) {
+                            history.replaceState({url: cleanUrl}, "", cleanUrl);
+                        }
                         // If there is redirection to the previous page, pop up from the current page.
                         OnsenMobileAjaxComponent.pushPage(false, null, null, null, function (template) {
                             window['onsenMobileTheme'].callback(data, template);
@@ -1139,7 +1195,37 @@ OnsenMobileAjaxComponent = {
         }
         return false;
     },
-    
+
+    // strip url parameters from url
+    stripFormModeParams: function (href) {
+        if (href.indexOf('?') === -1) {
+            return href;
+        }
+        var base = href.substring(0, href.indexOf('?'));
+        var params = new URLSearchParams(href.substring(href.indexOf('?') + 1));
+        params.delete('_mode');
+        params.delete('_action');
+        params.delete('id');
+        var qs = params.toString();
+        return qs ? (base + '?' + qs) : base;
+    },
+
+    // like redirectToPreviousPage, but for POST saves that never trigger pushState
+    hasExitedFormMode: function (preCallUrl, data) {
+        if (preCallUrl.indexOf('?') === -1) {
+            return false;
+        }
+        var params = new URLSearchParams(preCallUrl.substring(preCallUrl.indexOf('?') + 1));
+        var mode = params.get('_mode');
+        var action = params.get('_action');
+        var wasFormMode = (mode === 'edit' || mode === 'add' || mode === 'assignment' || action === 'start');
+        if (!wasFormMode) {
+            return false;
+        }
+        // a "_mode" field in the response means it's re-showing the same form (e.g. a validation error)
+        return data.indexOf('name="_mode"') === -1 && data.indexOf("name='_mode'") === -1;
+    },
+
     /*
      * Based on the event listening config, listen to the event and do the action based on event
      */

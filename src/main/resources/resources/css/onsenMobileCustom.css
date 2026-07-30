@@ -300,8 +300,15 @@ body:has(.popup-picker) {
 
 @media(max-width: 767px) {
     /* filter */
+    .filter_form:not(.popup) {
+        position: relative;
+    }
     .filter_form:not(.popup) .filters {
         position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 10;
         display: none;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         border-left: 1px solid var(--border-color);
